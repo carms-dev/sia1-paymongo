@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Check your BUDOL order after returning from checkout.">
+    <meta name="theme-color" content="#F36B3F">
+    <title>Checkout return | BUDOL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/buyer.css">
+    <script type="module" src="/js/cancel-page.js"></script>
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+    <main class="page-container buyer-main" id="main">
+        <section class="card checkout-return" aria-labelledby="return-title">
+            <p class="eyebrow">CHECKOUT RETURN</p>
+            <h1 id="return-title">Checkout wasn’t completed</h1>
+            <p>You returned before completing checkout. We’ll show the current order status from the server.</p>
+            <p id="order-status" class="return-status" role="status" aria-live="polite">Checking order status…</p>
+            <button id="retry-status" class="button button-secondary" type="button" hidden>Check again</button>
+            <a class="button button-primary" href="/cart.html">Return to cart</a>
+        </section>
+    </main>
+    <div id="site-footer"></div>
+</body>
+</html>

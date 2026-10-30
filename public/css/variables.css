@@ -1,0 +1,27 @@
+:root {
+    --orange: #F36B3F;
+    --orange-dark: #D9532B;
+    --navy: #172B4D;
+    --bg: #F5F6F8;
+    --white: #FFFFFF;
+    --text: #222B38;
+    --text-2: #77808F;
+    --text-accessible: #626D7C;
+    --orange-accessible: #B83F1F;
+    --border: #E5E8ED;
+    --success: #16A36A;
+    --error: #DC3545;
+    --discount: #E84C3D;
+    --promo: #FFD166;
+
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 40px;
+    --content-width: 1200px;
+    --radius-card: 4px;
+    --radius-button: 8px;
+    --shadow-light: 0 2px 8px rgba(23, 43, 77, 0.06);
+    --shadow-card: 0 1px 4px rgba(23, 43, 77, 0.08);
+}

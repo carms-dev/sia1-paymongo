@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#F36B3F">
+    <title>Shared foundation check | BUDOL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <style>
+        .test-main { padding-block: 24px; }
+        .test-main h1 { margin-top: 0; color: var(--navy); }
+        .test-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block: 16px; }
+        .test-toolbar input { flex: 1 1 180px; width: auto; }
+        .test-products { margin-top: 16px; }
+        .test-section { margin-top: 16px; }
+        .test-layout { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 16px; }
+        .test-modal-content { display: grid; gap: 12px; }
+        @media (max-width: 760px) {
+            .test-layout { grid-template-columns: 1fr; }
+            .dashboard-sidebar nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+    </style>
+    <script type="module" src="/js/test-page.js"></script>
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+    <main class="page-container test-main" id="main">
+        <h1>Shared foundation check</h1>
+        <p>This page exercises the shared layout, API, UI, auth, and cart modules. Add <code>?mock=1</code> to use local sample data.</p>
+        <div class="test-toolbar">
+            <label for="product-filter">Filter shown products</label>
+            <input id="product-filter" type="search" placeholder="Type a product name">
+            <button class="button button-secondary" id="refresh-products" type="button">Reload products</button>
+            <button class="button button-ghost" id="show-toast" type="button">Show toast</button>
+            <button class="button button-ghost" id="show-modal" type="button">Open modal</button>
+            <button class="button button-ghost" id="clear-cart" type="button">Clear cart</button>
+            <span id="current-user" role="status">Checking account…</span>
+        </div>
+        <p id="escaped-preview" aria-live="polite"></p>
+        <div class="test-layout">
+            <section aria-labelledby="sample-products-title">
+                <h2 id="sample-products-title">Sample products</h2>
+                <div id="product-list" class="product-grid test-products" aria-live="polite"></div>
+            </section>
+            <aside id="dashboard-nav" aria-label="Dashboard sidebar example"></aside>
+        </div>
+        <section class="card test-section" aria-labelledby="cart-state-title">
+            <h2 id="cart-state-title">Cart state</h2>
+            <p id="cart-state">Loading cart…</p>
+            <button class="button button-secondary" id="update-cart" type="button">Set first item quantity to 2</button>
+            <button class="button button-ghost" id="remove-cart" type="button">Remove first item</button>
+        </section>
+        <section class="card test-section" aria-labelledby="orders-title">
+            <div class="test-toolbar">
+                <h2 id="orders-title">Order API shape check</h2>
+                <button class="button button-secondary" id="load-orders" type="button">Load my orders</button>
+            </div>
+            <div id="order-list" aria-live="polite"></div>
+        </section>
+        <section class="card test-section" aria-labelledby="pagination-title">
+            <h2 id="pagination-title">Pagination example</h2>
+            <nav class="pagination" aria-label="Pagination">
+                <button type="button" disabled aria-label="Previous page">‹</button>
+                <button type="button" aria-current="page" aria-label="Page 1">1</button>
+                <button type="button" aria-label="Page 2">2</button>
+                <button type="button" aria-label="Next page">›</button>
+            </nav>
+        </section>
+        <section class="card test-section" aria-labelledby="states-title">
+            <h2 id="states-title">Empty and error states</h2>
+            <div class="test-toolbar">
+                <button class="button button-ghost" id="show-empty" type="button">Show empty state</button>
+                <button class="button button-ghost" id="show-error" type="button">Show error state</button>
+            </div>
+            <div id="state-demo"></div>
+        </section>
+        <section class="card test-section" aria-labelledby="table-title">
+            <h2 id="table-title">Table and status-badge preview</h2>
+            <p>These are visual examples only, not live order data.</p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th scope="col">Example</th><th scope="col">Status</th></tr></thead>
+                    <tbody>
+                        <tr><td>Order awaiting payment</td><td><span class="status-badge status-pending">Pending</span></td></tr>
+                        <tr><td>Approved seller shop</td><td><span class="status-badge status-approved">Approved</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <div id="test-modal" class="modal-backdrop" hidden>
+        <section class="modal test-modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <h2 id="modal-title">Foundation modal</h2>
+            <p>This demonstrates the shared modal styling and semantic dialog structure.</p>
+            <button class="button button-primary" id="close-modal" type="button">Close</button>
+        </section>
+    </div>
+    <div id="site-footer"></div>
+</body>
+</html>

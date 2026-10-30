@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Create a BUDOL seller account and submit your shop for approval.">
+    <meta name="theme-color" content="#F36B3F">
+    <title>Open a shop | BUDOL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <script type="module" src="/auth.js"></script>
+</head>
+<body class="auth-page">
+    <header class="auth-header">
+        <a class="logo" href="/index.html" aria-label="BUDOL home">
+            <span class="logo-icon">B</span><span>BUDOL<span class="logo-accent">.</span></span>
+        </a>
+        <a class="auth-back-link" href="/index.html">Back to shopping <span aria-hidden="true">→</span></a>
+    </header>
+    <main class="auth-layout seller-signup-layout">
+        <section class="auth-story" aria-labelledby="story-title">
+            <span class="eyebrow">SELL ON BUDOL</span>
+            <h1 id="story-title">Your Next Favorite Find Is Waiting</h1>
+            <p>Bring your shop to a marketplace built for useful everyday finds. Your shop will be reviewed before products can be listed.</p>
+            <div class="auth-story-art" aria-hidden="true">B</div>
+        </section>
+        <section class="auth-card" aria-labelledby="auth-title">
+            <span class="eyebrow">SELLER REGISTRATION</span>
+            <h2 id="auth-title">Create your shop</h2>
+            <p class="auth-card-intro">Set up your seller account and tell shoppers about your store.</p>
+            <form id="seller-signup-form" class="auth-form" novalidate data-auth-form="seller-signup" data-cy="seller-signup-form">
+                <label for="full-name">Full name</label>
+                <input id="full-name" name="full_name" type="text" autocomplete="name" maxlength="150" required placeholder="Your name" data-cy="seller-name">
+                <label for="email">Email address</label>
+                <input id="email" name="email" type="email" autocomplete="email" maxlength="255" required placeholder="you@example.com" aria-describedby="email-error" data-cy="seller-email">
+                <p class="field-error" id="email-error" aria-live="polite"></p>
+                <label for="shop-name">Shop name</label>
+                <input id="shop-name" name="shop_name" type="text" minlength="3" maxlength="120" required placeholder="Your shop name" aria-describedby="shop-name-error" data-cy="seller-shop-name">
+                <p class="field-error" id="shop-name-error" aria-live="polite"></p>
+                <label for="shop-description">Shop description</label>
+                <textarea id="shop-description" name="shop_description" maxlength="2000" placeholder="What can shoppers find in your shop?"></textarea>
+                <label for="password">Password</label>
+                <div class="password-field">
+                    <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="At least 8 characters" aria-describedby="password-hint" data-cy="seller-password">
+                    <button class="password-toggle" type="button" data-toggle-password="password" aria-label="Show password">Show</button>
+                </div>
+                <p class="password-hint" id="password-hint">Use 8–128 characters. A longer, unique password is safer.</p>
+                <label for="confirm-password">Confirm password</label>
+                <div class="password-field">
+                    <input id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="Enter your password again" aria-describedby="confirm-password-error" data-cy="seller-confirm-password">
+                    <button class="password-toggle" type="button" data-toggle-password="confirm-password" aria-label="Show password">Show</button>
+                </div>
+                <p class="field-error" id="confirm-password-error" aria-live="polite"></p>
+                <label class="terms-row" for="terms">
+                    <input id="terms" name="terms" type="checkbox" required data-cy="seller-terms">
+                    <span>I agree to the BUDOL terms and privacy notice.</span>
+                </label>
+                <p class="auth-message" id="auth-message" role="status" aria-live="polite"></p>
+                <button class="button button-primary auth-submit" type="submit" data-cy="seller-signup-submit">Create seller account <span aria-hidden="true">→</span></button>
+            </form>
+            <p class="auth-switch">Already registered? <a href="/login.html">Log in</a></p>
+        </section>
+    </main>
+    <footer class="auth-footer">
+        <span>© 2026 BUDOL. Student project for SIA1.</span>
+        <a href="/index.html">Continue browsing</a>
+    </footer>
+</body>
+</html>

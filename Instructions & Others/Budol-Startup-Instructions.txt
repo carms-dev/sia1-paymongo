@@ -1,0 +1,44 @@
+BUDOL WEBSITE - LOCAL STARTUP
+============================
+
+ONE-TIME SUPABASE DATABASE SETUP
+
+1. Create a Supabase PostgreSQL project.
+2. In its SQL Editor, run database\schema.sql once.
+3. Copy a PostgreSQL connection-pooler URL from the Supabase Connect panel.
+4. Update your private local .env using .env.example as a guide:
+   - DATABASE_URL=<your Supabase PostgreSQL connection URL>
+   - PGSSL=true
+   - INTERNAL_API_KEY=<a long random secret shared by the services>
+   - Remove the old DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, and DB_SSL entries.
+5. Keep .env private. Never commit or share its contents.
+
+EVERY TIME YOU WANT TO RUN BUDOL
+
+1. Double-click Start-Budol.bat.
+2. Keep the app-services and ngrok terminals open and wait for startup errors.
+3. Visit http://localhost:3000.
+
+XAMPP MySQL is not used by the PostgreSQL version. Existing MySQL records are
+not copied automatically. Keep the old database unchanged until any records
+you need have been separately migrated and checked.
+
+BEFORE TESTING PAYMONGO
+
+1. Use PayMongo test-mode credentials in your private .env.
+2. Keep ngrok running when testing webhooks locally.
+3. Register the webhook endpoint shown by the current ngrok URL:
+   https://YOUR-CURRENT-NGROK-URL/api/webhooks/paymongo
+4. Do not share .env, database passwords, API keys, or webhook secrets.
+
+START-Budol.bat starts the product, order, payment, and main website services
+under one supervisor. It first checks that PostgreSQL is reachable using
+DATABASE_URL. If startup fails, check the app-services terminal.
+
+WHEN FINISHED
+
+- Stop the service and ngrok terminals with Ctrl+C.
+- Do not delete the previous MySQL database until you have verified any data
+  you wanted to keep in PostgreSQL.
+
+For hosted deployment instructions, see DEPLOYMENT.md.

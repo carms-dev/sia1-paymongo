@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Create a BUDOL buyer account.">
+    <meta name="theme-color" content="#F36B3F">
+    <title>Create a buyer account | BUDOL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <script type="module" src="/auth.js"></script>
+</head>
+<body class="auth-page">
+    <header class="auth-header">
+        <a class="logo" href="/index.html" aria-label="BUDOL home">
+            <span class="logo-icon">B</span><span>BUDOL<span class="logo-accent">.</span></span>
+        </a>
+        <a class="auth-back-link" href="/index.html">Back to shopping <span aria-hidden="true">→</span></a>
+    </header>
+    <main class="auth-layout signup-layout">
+        <section class="auth-story" aria-labelledby="story-title">
+            <span class="eyebrow">WELCOME TO BUDOL</span>
+            <h1 id="story-title">Your Next Favorite Find Is Waiting</h1>
+            <p>Create a buyer account to save your cart, check out securely, and keep track of your orders.</p>
+            <div class="auth-story-art" aria-hidden="true">B</div>
+        </section>
+        <section class="auth-card" aria-labelledby="auth-title">
+            <span class="eyebrow">JOIN BUDOL</span>
+            <h2 id="auth-title">Create your buyer account</h2>
+            <p class="auth-card-intro">A few details and you’re ready to explore.</p>
+            <form id="signup-form" class="auth-form" novalidate data-auth-form="buyer-signup" data-cy="signup-form">
+                <label for="full-name">Full name</label>
+                <input id="full-name" name="full_name" type="text" autocomplete="name" maxlength="150" required placeholder="Your name" data-cy="signup-name">
+                <label for="email">Email address</label>
+                <input id="email" name="email" type="email" autocomplete="email" maxlength="255" required placeholder="you@example.com" aria-describedby="email-error" data-cy="signup-email">
+                <p class="field-error" id="email-error" aria-live="polite"></p>
+                <label for="password">Password</label>
+                <div class="password-field">
+                    <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="At least 8 characters" aria-describedby="password-hint" data-cy="signup-password">
+                    <button class="password-toggle" type="button" data-toggle-password="password" aria-label="Show password">Show</button>
+                </div>
+                <p class="password-hint" id="password-hint">Use 8–128 characters. A longer, unique password is safer.</p>
+                <label for="confirm-password">Confirm password</label>
+                <div class="password-field">
+                    <input id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="Enter your password again" aria-describedby="confirm-password-error" data-cy="signup-confirm-password">
+                    <button class="password-toggle" type="button" data-toggle-password="confirm-password" aria-label="Show password">Show</button>
+                </div>
+                <p class="field-error" id="confirm-password-error" aria-live="polite"></p>
+                <label class="terms-row" for="terms">
+                    <input id="terms" name="terms" type="checkbox" required data-cy="signup-terms">
+                    <span>I agree to the BUDOL terms and privacy notice.</span>
+                </label>
+                <p class="auth-message" id="auth-message" role="status" aria-live="polite"></p>
+                <button class="button button-primary auth-submit" type="submit" data-cy="signup-submit">Create account <span aria-hidden="true">→</span></button>
+            </form>
+            <p class="auth-switch">Already have an account? <a href="/login.html">Log in</a></p>
+            <p class="auth-security-note">Opening a shop? <a href="/seller-signup.html">Create a seller account</a></p>
+        </section>
+    </main>
+    <footer class="auth-footer">
+        <span>© 2026 BUDOL. Student project for SIA1.</span>
+        <a href="/index.html">Continue browsing</a>
+    </footer>
+</body>
+</html>

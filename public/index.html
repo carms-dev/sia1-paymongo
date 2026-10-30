@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Discover everyday finds from BUDOL marketplace shops.">
+    <meta name="theme-color" content="#F36B3F">
+    <title>BUDOL — Good finds for everyday life</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/buyer.css">
+    <script type="module" src="/js/home.js"></script>
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+    <main class="page-container buyer-main" id="main">
+        <section class="hero-grid" aria-label="Featured collections">
+            <article class="hero-main">
+                <span class="eyebrow">THE EVERYDAY FINDS MARKETPLACE</span>
+                <h1>Your Next Favorite Find Is Waiting</h1>
+                <p>Discover thoughtful picks from local shops, all in one place.</p>
+                <a class="button button-primary" href="/products.html">Shop Now <span aria-hidden="true">→</span></a>
+                <div class="hero-main-art" aria-hidden="true">B</div>
+            </article>
+            <div class="hero-promos">
+                <article class="hero-promo">
+                    <h2>Make room for good things.</h2>
+                    <p>Everyday home finds with a little extra charm.</p>
+                    <a class="button button-secondary" href="/products.html?category=Home%20%26%20Living">Shop Now</a>
+                </article>
+                <article class="hero-promo">
+                    <h2>Useful tech. Easy living.</h2>
+                    <p>Browse accessories and electronics for your day.</p>
+                    <a class="button button-primary" href="/products.html?category=Electronics">Shop Now</a>
+                </article>
+            </div>
+        </section>
+
+        <section class="buyer-section" aria-labelledby="category-title">
+            <div class="buyer-section-heading">
+                <div><h2 id="category-title">Shop by category</h2><p>Find something for every part of your day.</p></div>
+            </div>
+            <nav class="category-shortcuts" id="category-shortcuts" aria-label="Product categories"></nav>
+        </section>
+
+        <section class="buyer-section" aria-labelledby="shops-title">
+            <div class="buyer-section-heading">
+                <div><h2 id="shops-title">Shops to explore</h2><p>Meet the stores behind the finds.</p></div>
+                <a href="/products.html">Browse products</a>
+            </div>
+            <div class="shop-row" id="shop-list" aria-live="polite"></div>
+        </section>
+
+        <section class="buyer-section" aria-labelledby="picked-title">
+            <div class="buyer-section-heading">
+                <div><h2 id="picked-title">Picked for You</h2><p>Everyday favorites from BUDOL shops.</p></div>
+            </div>
+            <div class="product-grid" id="home-products" aria-live="polite"></div>
+            <div class="pagination"><button class="button button-secondary" id="load-more-products" type="button" hidden>Load More</button></div>
+        </section>
+    </main>
+    <div id="site-footer"></div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Search and browse BUDOL marketplace products.">
+    <meta name="theme-color" content="#F36B3F">
+    <title>Products | BUDOL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/buyer.css">
+    <script type="module" src="/js/products-page.js"></script>
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+    <main class="page-container buyer-main" id="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/index.html">Home</a><span aria-hidden="true">/</span><span id="breadcrumb-current">Products</span></nav>
+        <div class="catalog-layout">
+            <aside class="filter-panel" aria-label="Filter products">
+                <h2>Filter by price (PHP)</h2>
+                <div class="filter-price-row">
+                    <div class="form-field"><label for="price-min">Minimum</label><input id="price-min" type="number" min="0" step="1" inputmode="decimal" placeholder="₱0"></div>
+                    <div class="form-field"><label for="price-max">Maximum</label><input id="price-max" type="number" min="0" step="1" inputmode="decimal" placeholder="No limit"></div>
+                </div>
+                <button class="button button-secondary" id="apply-price" type="button">Apply price</button>
+                <button class="button button-ghost" id="clear-filters" type="button">Clear filters</button>
+            </aside>
+            <section aria-labelledby="results-title">
+                <div class="catalog-toolbar">
+                    <div>
+                        <h1 id="results-title" style="margin:0;color:var(--navy);font-size:22px">Products</h1>
+                        <p id="results-count" aria-live="polite">Loading products…</p>
+                    </div>
+                    <label for="sort-products">Sort by
+                        <select id="sort-products">
+                            <option value="featured">Featured</option>
+                            <option value="price-asc">Price: low to high</option>
+                            <option value="price-desc">Price: high to low</option>
+                            <option value="name">Name</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="products-grid" class="product-grid" aria-live="polite"></div>
+                <nav id="products-pagination" class="pagination" aria-label="Product pages"></nav>
+            </section>
+        </div>
+    </main>
+    <div id="site-footer"></div>
+</body>
+</html>

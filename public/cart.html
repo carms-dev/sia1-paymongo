@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Review your BUDOL shopping cart.">
+    <meta name="theme-color" content="#F36B3F">
+    <title>Your cart | BUDOL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/buyer.css">
+    <script type="module" src="/js/cart-page.js"></script>
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+    <main class="page-container buyer-main" id="main">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/index.html">Home</a><span aria-hidden="true">/</span><span>Shopping cart</span></nav>
+        <div class="buyer-section-heading"><div><h1>Your shopping cart</h1><p>Review items from each shop before checkout.</p></div></div>
+        <div id="buyer-role-message" role="status" hidden></div>
+        <div id="cart-empty"></div>
+        <div class="cart-layout">
+            <section aria-label="Cart items">
+                <label class="cart-select-all"><input id="select-all" type="checkbox" checked> Select all items</label>
+                <div id="cart-groups"></div>
+            </section>
+            <aside class="cart-summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">Order summary</h2>
+                <div class="summary-row"><span>Selected items</span><strong id="selected-count">0</strong></div>
+                <div class="summary-row"><span>Estimated subtotal</span><strong id="estimated-subtotal">₱0.00</strong></div>
+                <p class="estimated-note">Estimated total only. Prices and stock are confirmed by the server when your order is placed.</p>
+                <button class="button button-primary" id="cart-checkout" type="button" data-cy="cart-checkout">Check Out</button>
+            </aside>
+        </div>
+    </main>
+    <div id="site-footer"></div>
+</body>
+</html>
