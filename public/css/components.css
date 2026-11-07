@@ -137,6 +137,26 @@ textarea {
     color: #174D82;
 }
 
+.status-processing {
+    border-color: #175A9C;
+    background: #E5F1FC;
+    color: #174D82;
+}
+
+.status-delivered {
+    border-color: #16794F;
+    background: #E4F6ED;
+    color: #125C3D;
+}
+
+.status-cancelled,
+.status-expired,
+.status-hidden {
+    border-color: #B02A37;
+    background: #FDE8EA;
+    color: #842029;
+}
+
 .table-wrap {
     max-width: 100%;
     overflow-x: auto;
@@ -559,6 +579,10 @@ textarea {
     color: var(--navy);
 }
 
+.mobile-bottom-nav {
+    display: none;
+}
+
 .dashboard-sidebar {
     padding: 16px;
     border-radius: var(--radius-card);
@@ -668,5 +692,44 @@ textarea {
 
     .modal {
         padding: var(--space-2);
+    }
+}
+
+@media (max-width: 600px) {
+    body:has(.mobile-bottom-nav:not([hidden])) {
+        padding-bottom: 64px;
+    }
+
+    .mobile-bottom-nav:not([hidden]) {
+        position: fixed;
+        z-index: 50;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        min-height: 60px;
+        padding: 5px 4px max(5px, env(safe-area-inset-bottom));
+        border-top: 1px solid var(--border);
+        background: var(--white);
+        box-shadow: 0 -3px 14px rgba(23, 43, 77, 0.08);
+    }
+
+    .mobile-bottom-nav a {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1px;
+        color: var(--navy);
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .mobile-bottom-nav a span {
+        font-size: 18px;
+        line-height: 1;
     }
 }

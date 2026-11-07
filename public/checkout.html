@@ -16,10 +16,16 @@
 </head>
 <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <div id="site-header"></div>
+    <header class="checkout-header">
+        <a class="store-logo" href="/index.html" aria-label="BUDOL home"><span class="store-logo-mark" aria-hidden="true">B</span><span>BUDOL<span>.</span></span></a>
+        <nav class="checkout-steps" aria-label="Checkout progress">
+            <a href="/cart.html">Cart</a><span aria-hidden="true">›</span>
+            <strong aria-current="step">Delivery</strong><span aria-hidden="true">›</span>
+            <span>Payment</span><span aria-hidden="true">›</span><span>Confirmation</span>
+        </nav>
+    </header>
     <main class="page-container buyer-main" id="main">
-        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/index.html">Home</a><a href="/cart.html">Cart</a><span aria-hidden="true">/</span><span>Checkout</span></nav>
-        <div class="buyer-section-heading"><div><h1>Checkout</h1><p>Review your order before continuing to secure hosted checkout.</p></div></div>
+        <div class="buyer-section-heading"><div><h1>Checkout</h1><p>Review your delivery details and continue to PayMongo hosted checkout.</p></div></div>
         <div id="checkout-content" class="cart-layout" aria-live="polite"></div>
     </main>
     <div id="site-footer"></div>

@@ -672,7 +672,7 @@ app.post('/api/orders', ...buyerOnly,
     orderService(() => '/api/orders', (req) => ({ ...req.body, user_id: req.user.id })));
 
 app.get('/api/my/orders', ...buyerOnly,
-    orderService((req) => `/api/orders?user_id=${req.user.id}`));
+    orderService((req) => `/api/orders?user_id=${req.user.id}${queryString(req) ? `&${queryString(req).slice(1)}` : ''}`));
 
 // Buyers see only their own order; sellers and admins are checked by the service
 // using the X-User-Id / X-User-Role / X-Shop-Id headers.
@@ -707,7 +707,17 @@ app.get('/api/orders/:id', requireAuth, async (req, res) => {
                 return res.status(404).json({ error: 'Order not found.' });
             }
             if (result.data.order) {
-                result.data.order = { ...result.data.order, items: sellerItems };
+                const shopTotal = sellerItems.reduce(
+                    (sum, item) => sum + Number(item.line_total_centavos || 0),
+                    0
+                );
+                result.data.order = {
+                    ...result.data.order,
+                    items: sellerItems,
+                    total_centavos: shopTotal,
+                    customer_email: null,
+                    user_id: null
+                };
                 result.data.items = sellerItems;
             } else {
                 result.data = { ...result.data, items: sellerItems };
@@ -801,7 +811,10 @@ app.put('/api/seller/shop', ...sellerOnly,
 
 // Post goods: shop_id always comes from the seller's own shop.
 app.get('/api/seller/products', ...approvedSeller,
-    productService((req) => `/api/products?shop_id=${req.user.shop_id}`));
+    productService((req) => `/api/products?shop_id=${req.user.shop_id}${queryString(req) ? `&${queryString(req).slice(1)}` : ''}`));
+
+app.get('/api/seller/products/:id', ...approvedSeller,
+    productService((req) => `/api/products/${encodeURIComponent(req.params.id)}`));
 
 app.post('/api/seller/products', ...approvedSeller,
     audit('product_created', (req) => `Added product "${cleanText((req.body || {}).name, 120)}"`),
@@ -820,15 +833,19 @@ app.delete('/api/seller/products/:id', ...approvedSeller,
 // Orders and online payments of buyers, limited to this seller's shop.
 // Payments show status and amount only; card and wallet details stay with PayMongo.
 app.get('/api/seller/orders', ...approvedSeller,
-    orderService((req) => `/api/orders?shop_id=${req.user.shop_id}`));
+    orderService((req) => `/api/orders?shop_id=${req.user.shop_id}${queryString(req) ? `&${queryString(req).slice(1)}` : ''}`));
 
 app.patch('/api/seller/orders/:id/status', ...approvedSeller,
     audit('order_status_updated', (req) => `Order #${req.params.id} set to ${cleanText((req.body || {}).status, 40)}`),
     orderService((req) => `/api/orders/${encodeURIComponent(req.params.id)}/status`,
-        (req) => ({ status: (req.body || {}).status })));
+        (req) => ({
+            status: (req.body || {}).status,
+            courier: (req.body || {}).courier,
+            tracking_number: (req.body || {}).tracking_number
+        })));
 
 app.get('/api/seller/payments', ...approvedSeller,
-    paymentService((req) => `/api/payments?shop_id=${req.user.shop_id}`));
+    paymentService((req) => `/api/payments${queryString(req)}`));
 
 app.get('/api/seller/activity', ...sellerOnly, async (req, res) => {
     try {
@@ -1102,6 +1119,19 @@ app.get('/api/admin/payments', ...adminOnly,
 
 app.get('/health', (req, res) => {
     res.json({ message: 'SIA1 online store server is running!' });
+});
+
+app.use((req, res, next) => {
+    if (
+        ['GET', 'HEAD'].includes(req.method) &&
+        !req.path.startsWith('/api/') &&
+        req.accepts('html')
+    ) {
+        return res.status(404).sendFile(path.join(__dirname, 'public', '404.html'), error => {
+            if (error) next(error);
+        });
+    }
+    res.status(404).json({ error: 'Not found.' });
 });
 
 app.use((error, req, res, next) => {

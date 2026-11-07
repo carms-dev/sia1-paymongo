@@ -12,6 +12,9 @@ let currentPage = Math.max(1, Number.parseInt(params.get("page") || "1", 10) || 
 let minimum = null;
 let maximum = null;
 const grid = document.getElementById("products-grid");
+const filterPanel = document.getElementById("filter-panel");
+const filterToggle = document.getElementById("filter-toggle");
+const filterBackdrop = document.getElementById("filter-backdrop");
 
 document.getElementById("results-title").textContent =
     category || (query ? `Results for “${query}”` : "All products");
@@ -141,5 +144,20 @@ document.getElementById("clear-filters").addEventListener("click", () => {
     document.getElementById("price-max").value = "";
     window.location.assign(`/products.html${category ? `?category=${encodeURIComponent(category)}` : query ? `?q=${encodeURIComponent(query)}` : ""}`);
 });
+
+function closeFilters() {
+    filterPanel.classList.remove("is-open");
+    filterBackdrop.hidden = true;
+    filterToggle.setAttribute("aria-expanded", "false");
+}
+
+filterToggle.addEventListener("click", () => {
+    const opening = !filterPanel.classList.contains("is-open");
+    filterPanel.classList.toggle("is-open", opening);
+    filterBackdrop.hidden = !opening;
+    filterToggle.setAttribute("aria-expanded", String(opening));
+});
+filterBackdrop.addEventListener("click", closeFilters);
+document.getElementById("apply-price").addEventListener("click", closeFilters);
 
 loadProducts();

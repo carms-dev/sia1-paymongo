@@ -20,12 +20,13 @@
     <main class="page-container buyer-main" id="main">
         <section class="card checkout-return" aria-labelledby="return-title">
             <p class="eyebrow">CHECKOUT RETURN</p>
-            <h1 id="return-title">Checking your payment</h1>
-            <p>You’ve returned from PayMongo checkout. We’ll confirm your payment using the order status from the server.</p>
-            <p id="order-status" class="return-status" role="status" aria-live="polite">Checking order status…</p>
+            <h1 id="return-title">Confirming your payment...</h1>
+            <p>We’ll verify your payment using the order status from the server. Returning from PayMongo alone does not confirm payment.</p>
+            <p id="order-status" class="return-status" role="status" aria-live="polite" data-cy="order-status">Confirming your payment...</p>
+            <p id="confirmed-order-number" hidden></p>
+            <ul id="confirmed-order-items" class="confirmed-order-items" hidden></ul>
+            <div id="confirmed-order-actions" class="return-actions" hidden></div>
             <button id="retry-status" class="button button-secondary" type="button" hidden>Check again</button>
-            <p class="estimated-note">Returning to this page does not itself confirm that your payment was successful.</p>
-            <a class="button button-primary" href="/orders.html">View my orders</a>
         </section>
     </main>
     <div id="site-footer"></div>

@@ -22,12 +22,6 @@ function pageParams(query) {
     return { page, limit, offset: (page - 1) * limit };
 }
 
-function orderItemQuery() {
-    return `SELECT order_id, product_id, shop_id, product_name, price_centavos,
-                   quantity, price_centavos * quantity AS line_total_centavos
-            FROM order_items`;
-}
-
 // Check whether the Order Service is running
 app.get('/health', (req, res) => {
     res.json({ message: 'Order Service is running!' });
@@ -35,7 +29,10 @@ app.get('/health', (req, res) => {
 
 // Create a new order
 app.post('/api/orders', async (req, res) => {
-    const { customer_name, customer_email, items, user_id } = req.body;
+    const {
+        customer_name, customer_email, phone, region, province, city,
+        barangay, address_line, postal_code, delivery_notes, items, user_id
+    } = req.body;
     const userId = Number(user_id);
 
     // Validate customer information
@@ -47,10 +44,18 @@ app.post('/api/orders', async (req, res) => {
         customer_name.trim().length > 150 ||
         typeof customer_email !== 'string' ||
         customer_email.length > 255 ||
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer_email)
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer_email) ||
+        typeof phone !== 'string' || !/^\+?[0-9][0-9 ()-]{5,27}[0-9]$/.test(phone.trim()) ||
+        typeof region !== 'string' || !region.trim() || region.trim().length > 100 ||
+        typeof province !== 'string' || !province.trim() || province.trim().length > 100 ||
+        typeof city !== 'string' || !city.trim() || city.trim().length > 100 ||
+        typeof barangay !== 'string' || !barangay.trim() || barangay.trim().length > 100 ||
+        typeof address_line !== 'string' || !address_line.trim() || address_line.trim().length > 255 ||
+        typeof postal_code !== 'string' || !/^[0-9A-Za-z -]{3,10}$/.test(postal_code.trim()) ||
+        (delivery_notes !== undefined && (typeof delivery_notes !== 'string' || delivery_notes.length > 500))
     ) {
         return res.status(400).json({
-            error: 'Please provide a valid buyer ID, customer name, and email.'
+            error: 'Please provide valid delivery details, buyer ID, and email.'
         });
     }
 
@@ -162,14 +167,24 @@ app.post('/api/orders', async (req, res) => {
 
         const [orderResult] = await connection.execute(
             `INSERT INTO orders
-                (order_number, user_id, recipient_name, email,
-                 status, total_centavos)
-             VALUES (?, ?, ?, ?, 'pending', ?)`,
+                (order_number, user_id, recipient_name, phone, email,
+                 region, province, city, barangay, address_line, postal_code,
+                 delivery_notes, status, total_centavos)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+             RETURNING id`,
             [
                 orderNumber,
                 userId,
                 customer_name.trim(),
+                phone.trim(),
                 customer_email.trim(),
+                region.trim(),
+                province.trim(),
+                city.trim(),
+                barangay.trim(),
+                address_line.trim(),
+                postal_code.trim(),
+                typeof delivery_notes === 'string' ? delivery_notes.trim() || null : null,
                 total
             ]
         );
@@ -201,6 +216,14 @@ app.post('/api/orders', async (req, res) => {
                 user_id: userId,
                 customer_name: customer_name.trim(),
                 customer_email: customer_email.trim(),
+                phone: phone.trim(),
+                region: region.trim(),
+                province: province.trim(),
+                city: city.trim(),
+                barangay: barangay.trim(),
+                address_line: address_line.trim(),
+                postal_code: postal_code.trim(),
+                delivery_notes: typeof delivery_notes === 'string' ? delivery_notes.trim() || null : null,
                 status: 'pending',
                 total_centavos: total,
                 items: orderItems
@@ -250,8 +273,13 @@ app.get('/api/orders', async (req, res) => {
     }
 
     if (typeof req.query.status === 'string' && req.query.status.trim()) {
-        conditions.push('o.status = ?');
-        values.push(req.query.status.trim());
+        const statuses = req.query.status.split(',').map(value => value.trim()).filter(Boolean);
+        const allowedStatuses = ['pending', 'paid', 'cancelled', 'failed'];
+        if (!statuses.length || statuses.some(status => !allowedStatuses.includes(status))) {
+            return res.status(400).json({ error: 'Invalid order status filter.' });
+        }
+        conditions.push(`o.status IN (${statuses.map(() => '?').join(', ')})`);
+        values.push(...statuses);
     }
 
     if (typeof req.query.q === 'string' && req.query.q.trim()) {
@@ -271,7 +299,9 @@ app.get('/api/orders', async (req, res) => {
         );
         const [orders] = await db.execute(
             `SELECT o.id, o.order_number, o.user_id, o.recipient_name AS customer_name,
-                    o.email AS customer_email, o.status, o.total_centavos, o.created_at
+                    o.phone, o.email AS customer_email, o.region, o.province, o.city,
+                    o.barangay, o.address_line, o.postal_code, o.delivery_notes,
+                    o.status, o.total_centavos, o.created_at
              FROM orders o
              ${where}
              ORDER BY o.id DESC
@@ -286,7 +316,15 @@ app.get('/api/orders', async (req, res) => {
                 ? orders.map(order => order.id)
                 : [...orders.map(order => order.id), shopId];
             const [items] = await db.execute(
-                `${orderItemQuery()} WHERE order_id IN (${placeholders})${shopFilter} ORDER BY order_id, product_id`,
+                `SELECT oi.order_id, oi.product_id, oi.shop_id, oi.product_name,
+                        oi.price_centavos, oi.quantity,
+                        oi.price_centavos::BIGINT * oi.quantity AS line_total_centavos,
+                        oi.fulfillment_status, oi.courier, oi.tracking_number,
+                        p.image_url
+                 FROM order_items oi
+                 LEFT JOIN products p ON p.id = oi.product_id
+                 WHERE oi.order_id IN (${placeholders})${shopFilter.replaceAll('shop_id', 'oi.shop_id')}
+                 ORDER BY oi.order_id, oi.product_id`,
                 itemParams
             );
             const itemsByOrder = new Map();
@@ -297,6 +335,14 @@ app.get('/api/orders', async (req, res) => {
             }
             orders.forEach(order => {
                 order.items = itemsByOrder.get(String(order.id)) || [];
+                if (shopId !== null) {
+                    order.total_centavos = order.items.reduce(
+                        (sum, item) => sum + Number(item.line_total_centavos || 0),
+                        0
+                    );
+                    order.customer_email = null;
+                    order.user_id = null;
+                }
             });
         }
 
@@ -320,7 +366,9 @@ app.get('/api/orders/:id', async (req, res) => {
     try {
         const [orders] = await db.execute(
             `SELECT id, order_number, user_id, recipient_name AS customer_name,
-                    email AS customer_email, status, total_centavos, created_at
+                    phone, email AS customer_email, region, province, city, barangay,
+                    address_line, postal_code, delivery_notes,
+                    status, total_centavos, created_at
              FROM orders
              WHERE id = ?`,
             [orderId]
@@ -333,7 +381,14 @@ app.get('/api/orders/:id', async (req, res) => {
         }
 
         const [items] = await db.execute(
-            `${orderItemQuery()} WHERE order_id = ?`,
+            `SELECT oi.order_id, oi.product_id, oi.shop_id, oi.product_name,
+                    oi.price_centavos, oi.quantity,
+                    oi.price_centavos::BIGINT * oi.quantity AS line_total_centavos,
+                    oi.fulfillment_status, oi.courier, oi.tracking_number,
+                    p.image_url
+             FROM order_items oi
+             LEFT JOIN products p ON p.id = oi.product_id
+             WHERE oi.order_id = ?`,
             [orderId]
         );
 
@@ -354,6 +409,10 @@ app.patch('/api/orders/:id/status', async (req, res) => {
     const orderId = Number(req.params.id);
     const shopId = Number(req.headers['x-shop-id']);
     const status = req.body?.status;
+    const courier = typeof req.body?.courier === 'string' ? req.body.courier.trim() : '';
+    const trackingNumber = typeof req.body?.tracking_number === 'string'
+        ? req.body.tracking_number.trim()
+        : '';
     const allowedStatuses = ['processing', 'shipped', 'delivered', 'cancelled'];
 
     if (!Number.isSafeInteger(orderId) || orderId < 1) {
@@ -365,13 +424,38 @@ app.patch('/api/orders/:id/status', async (req, res) => {
     if (!allowedStatuses.includes(status)) {
         return res.status(400).json({ error: 'Invalid fulfillment status.' });
     }
+    if (courier.length > 80 || trackingNumber.length > 80) {
+        return res.status(400).json({ error: 'Courier and tracking number must be 80 characters or fewer.' });
+    }
+    if (status === 'shipped' && (!courier || !trackingNumber)) {
+        return res.status(400).json({ error: 'Courier and tracking number are required when shipping an order.' });
+    }
 
     try {
+        const [orders] = await db.execute(
+            `SELECT status
+             FROM orders
+             WHERE id = ?
+               AND EXISTS (
+                   SELECT 1 FROM order_items
+                   WHERE order_id = orders.id AND shop_id = ?
+               )
+             LIMIT 1`,
+            [orderId, shopId]
+        );
+        if (!orders.length) {
+            return res.status(404).json({ error: 'Order not found for this shop.' });
+        }
+        if (orders[0].status !== 'paid') {
+            return res.status(400).json({ error: 'Fulfillment can be updated after payment is confirmed.' });
+        }
         const [result] = await db.execute(
             `UPDATE order_items
-             SET fulfillment_status = ?
+             SET fulfillment_status = ?,
+                 courier = ?,
+                 tracking_number = ?
              WHERE order_id = ? AND shop_id = ?`,
-            [status, orderId, shopId]
+            [status, courier || null, trackingNumber || null, orderId, shopId]
         );
         if (!result.affectedRows) {
             return res.status(404).json({ error: 'Order not found for this shop.' });

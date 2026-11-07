@@ -54,6 +54,7 @@ function createImage(product, className = "product-card-image") {
 export function createProductCard(product) {
     const card = document.createElement("article");
     card.className = "product-card";
+    card.dataset.cy = "product-card";
     const imageLink = document.createElement("a");
     imageLink.href = productLink(product);
     imageLink.setAttribute("aria-label", `View ${product.name}`);
@@ -65,12 +66,14 @@ export function createProductCard(product) {
     titleLink.href = productLink(product);
     const title = document.createElement("h2");
     title.className = "product-card-title";
+    title.dataset.cy = "product-title";
     title.textContent = product.name;
     titleLink.appendChild(title);
 
     const priceRow = document.createElement("div");
     const price = document.createElement("strong");
     price.className = "product-card-price";
+    price.dataset.cy = "product-price";
     price.textContent = formatPeso(product.price_centavos);
     priceRow.appendChild(price);
 

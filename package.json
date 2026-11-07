@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node start-all.js",
-    "test": "node --test tests/database-sql.test.js"
+    "test": "node --test tests/database-sql.test.js",
+    "seed:e2e": "node scripts/seed-e2e.js",
+    "test:e2e": "cypress run",
+    "test:e2e:edge": "cypress run --browser edge",
+    "test:mock": "cypress run --config-file cypress.mock.config.js"
   },
   "keywords": [],
   "author": "",

@@ -45,6 +45,7 @@ function fillAccountMenu(container, user) {
     name.textContent = user.full_name || user.email || "My account";
     container.appendChild(name);
     if (user.role === "buyer") {
+        container.appendChild(makeLink("My Account", "/account.html", "button button-ghost"));
         container.appendChild(makeLink("My Orders", "/orders.html", "button button-ghost"));
     } else {
         container.appendChild(makeLink(
@@ -133,7 +134,14 @@ function renderFooter(container) {
                 </nav>
                 <small>© 2026 BUDOL. Student project for SIA1.</small>
             </div>
-        </footer>`;
+        </footer>
+        <nav class="mobile-bottom-nav" aria-label="Buyer navigation">
+            <a href="/index.html"><span aria-hidden="true">⌂</span>Home</a>
+            <a href="/products.html"><span aria-hidden="true">▦</span>Categories</a>
+            <a href="/cart.html"><span aria-hidden="true">▣</span>Cart</a>
+            <a href="/orders.html"><span aria-hidden="true">↗</span>Orders</a>
+            <a href="/account.html"><span aria-hidden="true">○</span>Account</a>
+        </nav>`;
 }
 
 export async function renderSiteLayout() {
@@ -169,6 +177,9 @@ export async function renderSiteLayout() {
         try {
             const result = await getCurrentUser();
             fillAccountMenu(accountMenu, result.user);
+            if (result.user?.role === "admin" || result.user?.role === "seller") {
+                container.querySelector(".mobile-bottom-nav")?.setAttribute("hidden", "");
+            }
         } catch (error) {
             if (error.status === 401) {
                 fillAccountMenu(accountMenu, null);
@@ -203,16 +214,28 @@ export function renderDashboardSidebar(role, activePage = "") {
     const root = role === "seller" ? "/seller/" : "/admin/";
     const aside = document.createElement("aside");
     aside.className = "dashboard-sidebar";
+    if (window.matchMedia("(max-width: 900px)").matches) aside.classList.add("is-collapsed");
     const title = document.createElement("h2");
     title.textContent = role === "seller" ? "Seller Center" : "Administration";
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "dashboard-sidebar-toggle";
+    toggle.textContent = "Menu";
+    toggle.setAttribute("aria-expanded", String(!aside.classList.contains("is-collapsed")));
+    toggle.setAttribute("aria-controls", `dashboard-navigation-${role}`);
+    toggle.addEventListener("click", () => {
+        aside.classList.toggle("is-collapsed");
+        toggle.setAttribute("aria-expanded", String(!aside.classList.contains("is-collapsed")));
+    });
     const nav = document.createElement("nav");
+    nav.id = `dashboard-navigation-${role}`;
     nav.setAttribute("aria-label", `${role} navigation`);
     (role === "seller" ? sellerPages : adminPages).forEach(([label, page]) => {
         const link = makeLink(label, `${root}${page}`);
         if (page === activePage) link.setAttribute("aria-current", "page");
         nav.appendChild(link);
     });
-    aside.append(title, nav);
+    aside.append(title, toggle, nav);
     return aside;
 }
 

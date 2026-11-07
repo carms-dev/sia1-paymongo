@@ -166,7 +166,8 @@ app.post(
                 // Update payment record
                 await connection.execute(
                     `UPDATE payments
-                     SET payment_status = 'paid'
+                     SET payment_status = 'paid',
+                         paid_at = CURRENT_TIMESTAMP
                      WHERE checkout_session_id = ?`,
                     [sessionId]
                 );
@@ -226,6 +227,93 @@ app.get('/health', (req, res) => {
     });
 });
 
+app.get('/api/payments', async (req, res) => {
+    const role = req.headers['x-user-role'];
+    const shopId = Number(req.headers['x-shop-id']);
+    const isSeller = role === 'seller' && Number.isSafeInteger(shopId) && shopId > 0;
+    if (!isSeller && role !== 'admin') {
+        return res.status(403).json({ error: 'A seller shop or administrator account is required.' });
+    }
+
+    const statuses = ['paid', 'pending', 'failed', 'cancelled', 'expired'];
+    const status = typeof req.query.status === 'string' ? req.query.status : '';
+    if (status && !statuses.includes(status)) {
+        return res.status(400).json({ error: 'Invalid payment status.' });
+    }
+
+    const conditions = [];
+    const values = [];
+    const search = typeof req.query.q === 'string' ? req.query.q.trim().slice(0, 100) : '';
+    if (isSeller) {
+        conditions.push('oi.shop_id = ?');
+        values.push(shopId);
+    }
+    if (status) {
+        conditions.push('latest.payment_status = ?');
+        values.push(status);
+    }
+    if (search) {
+        conditions.push('(o.order_number ILIKE ? OR u.full_name ILIKE ?)');
+        values.push(`%${search}%`, `%${search}%`);
+    }
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const pageValue = Number.parseInt(req.query.page || '1', 10);
+    const requestedLimit = Number.parseInt(req.query.limit || '20', 10);
+    const page = Number.isSafeInteger(pageValue) && pageValue > 0 ? pageValue : 1;
+    const limit = Number.isSafeInteger(requestedLimit) && requestedLimit > 0
+        ? Math.min(requestedLimit, 100)
+        : 20;
+    const paginated = role === 'admin' || req.query.page !== undefined || req.query.limit !== undefined;
+    const pagingSql = paginated ? `LIMIT ${limit} OFFSET ${(page - 1) * limit}` : '';
+    const latestCte = `WITH latest AS (
+        SELECT DISTINCT ON (order_id) order_id, payment_status,
+               payment_method, COALESCE(paid_at, created_at) AS payment_date
+        FROM payments
+        ORDER BY order_id, created_at DESC, id DESC
+    )`;
+
+    try {
+        const [[countResult]] = await db.execute(
+            `${latestCte}
+             SELECT COUNT(DISTINCT o.id) AS total
+             FROM latest
+             JOIN orders o ON o.id = latest.order_id
+             JOIN users u ON u.id = o.user_id
+             JOIN order_items oi ON oi.order_id = o.id
+             ${where}`,
+            values
+        );
+        const [payments] = await db.execute(
+            `${latestCte}
+             SELECT o.id AS order_id, o.order_number,
+                    u.full_name AS buyer_name,
+                    SUM(oi.price_centavos::BIGINT * oi.quantity) AS amount_centavos,
+                    latest.payment_status AS status,
+                    COALESCE(latest.payment_method, 'PayMongo Checkout') AS payment_method,
+                    latest.payment_date AS created_at
+             FROM latest
+             JOIN orders o ON o.id = latest.order_id
+             JOIN users u ON u.id = o.user_id
+             JOIN order_items oi ON oi.order_id = o.id
+             ${where}
+             GROUP BY o.id, o.order_number, u.full_name,
+                      latest.payment_status, latest.payment_method, latest.payment_date
+             ORDER BY latest.payment_date DESC
+             ${pagingSql}`,
+            values
+        );
+        res.json({
+            payments,
+            total: Number(countResult.total),
+            page,
+            limit: paginated ? limit : payments.length
+        });
+    } catch (error) {
+        console.error('Failed to fetch payments:', error.message);
+        res.status(500).json({ error: 'Unable to load payment records.' });
+    }
+});
+
 // ==================================================
 // CREATE PAYMONGO CHECKOUT SESSION
 // ==================================================
@@ -275,6 +363,9 @@ app.post('/api/checkout', async (req, res) => {
             return res.status(404).json({
                 error: 'Order details were not returned.'
             });
+        }
+        if (Number(order.user_id) !== Number(req.body.user_id)) {
+            return res.status(404).json({ error: 'Order not found.' });
         }
 
         if (order.status !== 'pending') {
@@ -371,9 +462,9 @@ app.post('/api/checkout', async (req, res) => {
 
         await connection.execute(
             `INSERT INTO payments
-                (order_id, checkout_session_id, checkout_url, payment_status)
-             VALUES (?, ?, ?, 'pending')`,
-            [order.id, session.id, checkoutUrl]
+                (order_id, checkout_session_id, checkout_url, payment_status, amount_centavos)
+             VALUES (?, ?, ?, 'pending', ?)`,
+            [order.id, session.id, checkoutUrl, order.total_centavos]
         );
 
         return res.status(201).json({

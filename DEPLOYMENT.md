@@ -13,6 +13,16 @@
 
 The schema script is safe to re-run for creating missing objects and seeding categories. It is not a MySQL-to-PostgreSQL data migration: existing MySQL users, products, and orders are not copied.
 
+If you already ran an earlier version of the schema, run this additive migration in the Supabase SQL Editor so checkout can save the delivery region:
+
+```sql
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS region VARCHAR(100);
+```
+
+## Frontend end-to-end checks
+
+Run `npm run test:e2e` to execute Cypress against the public frontend with mock API data. These tests cover buyer signup/login, add-to-cart, seller approval status, admin access control, and overflow checks for every public page at 360px, 768px, and 1280px. Mock-mode checks do not verify Supabase connectivity or PayMongo transactions.
+
 ## Render deployment
 
 This repository's `npm start` starts the four Node processes under one Render web service. The main Express server uses Render's assigned `PORT`; the other processes use loopback service ports. In Render, configure:
